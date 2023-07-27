@@ -418,6 +418,7 @@ function constructQuads() {
     let maxx = -100000;
     let miny = 100000;
     let maxy = -100000;
+    let patchscale = rand(1.6, 4);
     for(let i = 0; i < walks; i++) {
         movingcenter.x = aaa/2+aaa/2 * (-.5 + power(noise(i*0.03, 12.31), 4));
         movingcenter.y = bbb/2+bbb/2 * (-.5 + power(noise(i*0.03, 331.58), 4));
@@ -438,7 +439,7 @@ function constructQuads() {
             }
 
             let le = 6.8;
-            let lo = rand(16, 24) * .2 * (1.6 + .6 * Math.sin(iter * 0.8))*4.;
+            let lo = rand(16, 24) * .2 * (1.6 + .6 * Math.sin(iter * 0.8))*patchscale;
             let p1 = new Vector(pos.x - lo, pos.y - lo * le);
             let p2 = new Vector(pos.x + lo, pos.y - lo * le);
             let p3 = new Vector(pos.x - lo, pos.y + lo * le);
