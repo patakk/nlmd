@@ -469,9 +469,14 @@ function constructQuads() {
 
             let hohoamp = 1-map(i, 0, walks, 0, 1);
 
-            c1[0] = c1[0] * (1 - hohoamp) + hohoamp * orange[0];
-            c1[1] = c1[1] * (1 - hohoamp) + hohoamp * orange[1];
-            c1[2] = c1[2] * (1 - hohoamp) + hohoamp * orange[2];
+            let oorange = [orange[0], orange[1], orange[2]];
+            oorange[0] = clamp(oorange[0] + .3*rand(-.15, .15), 0, 1);
+            oorange[1] = clamp(oorange[1] + .3*rand(-.15, .15), 0, 1);
+            oorange[2] = clamp(oorange[2] + .3*rand(-.15, .15), 0, 1);
+
+            c1[0] = c1[0] * (1 - hohoamp) + hohoamp * oorange[0];
+            c1[1] = c1[1] * (1 - hohoamp) + hohoamp * oorange[1];
+            c1[2] = c1[2] * (1 - hohoamp) + hohoamp * oorange[2];
 
             
             minx = Math.min(minx, p1.x, p2.x, p3.x, p4.x);
