@@ -2,6 +2,7 @@
 import {getShaderSource, createShader, createProgram} from "./webglutils.js";
 import { Vector, Quad, noiseSeed, noise } from "./utils.js";
 import { makeBlueNoiseImage, poissonDiskSampling } from "./poisson.js"; 
+import { getPalette } from "./palette.js"; 
 
 let canvas;
 let gl;
@@ -408,6 +409,10 @@ function constructQuads() {
         [0, 0, 0]
     ]
 
+    let palettes = getPalette().palettes;
+    palette = palettes[Math.floor(rand(0, palettes.length))];
+    palette = palettes[7];
+
     let ccolor = palette[Math.floor(rand(0, palette.length))];
 
     let coco = 0;
@@ -419,6 +424,7 @@ function constructQuads() {
     let miny = 100000;
     let maxy = -100000;
     let patchscale = rand(1.6, 4);
+    let symetryend = rand(.2, .6);
     for(let i = 0; i < walks; i++) {
         movingcenter.x = aaa/2+aaa/2 * (-.5 + power(noise(i*0.03, 12.31), 4));
         movingcenter.y = bbb/2+bbb/2 * (-.5 + power(noise(i*0.03, 331.58), 4));
@@ -440,6 +446,8 @@ function constructQuads() {
 
             let le = 6.8;
             let lo = rand(16, 24) * .2 * (1.6 + .6 * Math.sin(iter * 0.8))*patchscale;
+            // le = 1;
+            // lo = 10;
             let p1 = new Vector(pos.x - lo, pos.y - lo * le);
             let p2 = new Vector(pos.x + lo, pos.y - lo * le);
             let p3 = new Vector(pos.x - lo, pos.y + lo * le);
@@ -454,14 +462,14 @@ function constructQuads() {
             let c2 = [rand(0,1), map(i,0,walks,0.1,.3), 0]; // used for fbm3
             let c3 = [0, 0, rand(.8,1)];
 
-            if(rand(0,1) < .01) {
+            if(rand(0,1) < .001) {
                 ccolor = palette[Math.floor(rand(0, palette.length))];
             }
 
-
-            c1[0] = clamp(ccolor[0] + 5*rand(-.15,.15), 0, 1);
-            c1[1] = clamp(ccolor[1] + 5*rand(-.15,.15), 0, 1);
-            c1[2] = clamp(ccolor[2] + 5*rand(-.15,.15), 0, 1);
+            let rero = 2;
+            c1[0] = clamp(ccolor[0] + rero*rand(-.15,.15), 0, 1);
+            c1[1] = clamp(ccolor[1] + rero*rand(-.15,.15), 0, 1);
+            c1[2] = clamp(ccolor[2] + rero*rand(-.15,.15), 0, 1);
 
             let whiteamp = .25 + .25*Math.sin(iter * 0.8);
             c1[0] = c1[0] * (1 - whiteamp) + whiteamp * white;
@@ -475,11 +483,18 @@ function constructQuads() {
             oorange[1] = clamp(oorange[1] + .3*rand(-.15, .15), 0, 1);
             oorange[2] = clamp(oorange[2] + .3*rand(-.15, .15), 0, 1);
 
-            c1[0] = c1[0] * (1 - hohoamp) + hohoamp * oorange[0];
-            c1[1] = c1[1] * (1 - hohoamp) + hohoamp * oorange[1];
-            c1[2] = c1[2] * (1 - hohoamp) + hohoamp * oorange[2];
+            // c1[0] = c1[0] * (1 - hohoamp) + hohoamp * oorange[0];
+            // c1[1] = c1[1] * (1 - hohoamp) + hohoamp * oorange[1];
+            // c1[2] = c1[2] * (1 - hohoamp) + hohoamp * oorange[2];
 
-            
+
+            if(rand(0,1) < .5 && i < walks*symetryend) {
+                quad.p1.x = -(quad.p1.x - aaa/2) + aaa/2;
+                quad.p2.x = -(quad.p2.x - aaa/2) + aaa/2;
+                quad.p3.x = -(quad.p3.x - aaa/2) + aaa/2;
+                quad.p4.x = -(quad.p4.x - aaa/2) + aaa/2;
+            }
+
             minx = Math.min(minx, p1.x, p2.x, p3.x, p4.x);
             maxx = Math.max(maxx, p1.x, p2.x, p3.x, p4.x);
             miny = Math.min(miny, p1.y, p2.y, p3.y, p4.y);

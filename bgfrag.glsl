@@ -227,7 +227,7 @@ void main() {
     qv_uv.xy = floor(qv_uv.xy * oo) / oo;
     float rex = hash12(vec2(v_uv.x * 31.21 + u_seed.x + 31.41, v_uv.y * 231.1 + u_seed.x + 31.41));
     float rey = hash12(vec2(v_uv.x*31.21 + u_seed.x+22.33, v_uv.y*231.1 + u_seed.x+41.12));
-    qv_uv = v_uv + hash12(vec2(39.*v_uv.x+rex, 39.*v_uv.y+rey))*.001;
+    qv_uv = v_uv.xy + hash12(vec2(39.*v_uv.x+rex, 39.*v_uv.y+rey))*.001;
 
     vec3 color0 = texture2D(u_texture, v_uv).rgb;
     vec3 color = texture2D(u_texture, qv_uv).rgb;

@@ -252,4 +252,6 @@ void main() {
     gl_FragColor = vec4(vec3(v_diffuse1), ss);
     gl_FragColor = vec4(v_uv.x, v_uv.y, 0., 1.);
     gl_FragColor = vec4(vec3(v_diffuse1), ss*.6);
+
+    // gl_FragColor = vec4(color, 1.);
 }
