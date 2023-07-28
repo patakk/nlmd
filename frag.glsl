@@ -234,11 +234,15 @@ void main() {
     // nz = fbm3(vec3(v_uv.x * 1., v_uv.y * 1., 0.0));
 
     vec2 noisy_uv = v_uv;
-    noisy_uv.x += 3.2*(-.5+fbm3(vec3(v_uv.x*v_diffuse2.y * 5., v_uv.y*v_diffuse2.y * 3., 31.30+v_diffuse2.x)));
-    noisy_uv.y += 3.2*(-.5+fbm3(vec3(v_uv.x*v_diffuse2.y * 5., v_uv.y*v_diffuse2.y * 3., 14.540+ v_diffuse2.x)));
+    noisy_uv.x += (.1+.9*v_diffuse2.z)*5.2*(-.5+fbm3(vec3(v_uv.x*v_diffuse2.y * 5., v_uv.y*v_diffuse2.y * 3., 31.30+v_diffuse2.x)));
+    noisy_uv.y += (.1+.9*v_diffuse2.z)*5.2*(-.5+fbm3(vec3(v_uv.x*v_diffuse2.y * 5., v_uv.y*v_diffuse2.y * 3., 14.540+ v_diffuse2.x)));
     float sx = power(1. - 2. * (noisy_uv.x - .5), 2.);
     float sy = power(1. - 2. * (noisy_uv.y - .5), 2.);
-    float ss = smoothstep(.66, .7, sx*sy);
+    float ss = smoothstep(.66*v_diffuse2.z, .9-.2*v_diffuse2.z, sx*sy);
+
+    if(u_seed.x < .5){
+        ss = smoothstep(.66, .7, sx * sy);
+    }
 
     sx = power(1. - 2. * (v_uv.x - .5), 2.);
     sy = power(1. - 2. * (v_uv.y - .5), 2.);

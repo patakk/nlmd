@@ -25,6 +25,7 @@ void main() {
     vec3 position = (a_position + vec3(u_averagepos.x, u_averagepos.y, 0.)) / vec3(u_simulation, 1.) * 2. - 1.;
 
     gl_PointSize = 10.0;
+    // gl_Position = vec4(position * .87 - vec3(0., .03, 0.), 1);
     gl_Position = vec4(position, 1);
     v_uv = a_uv;
     v_info = a_info;

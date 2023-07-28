@@ -280,6 +280,7 @@ function render(){
     gl.clearColor(0.9254902, 0.87156863, 0.84588235, 1.);
 
     let chc = Math.floor(rand(0, 3));
+    chc = 0;
     if(chc == 0){
         gl.clearColor(0.1254902, 0.12156863, 0.10588235, 1.);
     }
@@ -348,6 +349,13 @@ function render(){
     gl.uniform1f(gl.getUniformLocation(bgProgram, "u_postproc"), POSTPROC);
     gl.uniform3f(gl.getUniformLocation(bgProgram, "u_margincolor"), 0.15, 0.15, 0.15);
 
+    let pp = palettes[7];
+    let edgec = pp[Math.floor(rand(0, pp.length))];
+    edgec = [1, .4, 0]
+    // edgec = [0,0,0]
+
+    gl.uniform3f(gl.getUniformLocation(bgProgram, "u_edgecolor"), edgec[0], edgec[1], edgec[2]);
+
 
     let bgPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, bgPositionBuffer);
@@ -375,6 +383,8 @@ let black = [0., 0., 0.];
 function clamp(x, a, b) {
     return Math.max(a, Math.min(b, x));
 }
+
+let palettes = getPalette().palettes;
 
 function constructQuads() {
 
@@ -409,7 +419,6 @@ function constructQuads() {
         [0, 0, 0]
     ]
 
-    let palettes = getPalette().palettes;
     palette = palettes[Math.floor(rand(0, palettes.length))];
     palette = palettes[7];
 
@@ -418,13 +427,19 @@ function constructQuads() {
     let coco = 0;
     let white = rand(0.2, .8);
     let orange = [rand(0.5, 1.), rand(0.2, .5), rand(0., .5)];
+    orange = palette[Math.floor(rand(0, palette.length))];
     let walks = 500;
+    if(prng.rand() < .5) {
+        walks = rand(33, 200);
+    }
     let minx = 100000;
     let maxx = -100000;
     let miny = 100000;
     let maxy = -100000;
-    let patchscale = rand(1.6, 4);
+    let patchscale = rand(1.2, 4)*map(walks, 33, 500, 4, 1);
     let symetryend = rand(.2, .6);
+    let colorchangeprob = rand(.00031, .002);
+    let changingdistortion = prng.rand() < .5;
     for(let i = 0; i < walks; i++) {
         movingcenter.x = aaa/2+aaa/2 * (-.5 + power(noise(i*0.03, 12.31), 4));
         movingcenter.y = bbb/2+bbb/2 * (-.5 + power(noise(i*0.03, 331.58), 4));
@@ -459,10 +474,13 @@ function constructQuads() {
             quad.rotateOff(angle + rand(-.1,.3), midpoint);
 
             let c1 = [rand(.8,1), 0, 0];
-            let c2 = [rand(0,1), map(i,0,walks,0.1,.3), 0]; // used for fbm3
+            let c2 = [rand(0, 1), map(i, 0, walks, 0.1, .3), map(i, 0, walks, 0.0, 1)]; // used for fbm3
+            if (!changingdistortion){
+                c2[2] = 1;
+            }
             let c3 = [0, 0, rand(.8,1)];
 
-            if(rand(0,1) < .001) {
+            if(rand(0,1) < colorchangeprob) {
                 ccolor = palette[Math.floor(rand(0, palette.length))];
             }
 
@@ -471,7 +489,8 @@ function constructQuads() {
             c1[1] = clamp(ccolor[1] + rero*rand(-.15,.15), 0, 1);
             c1[2] = clamp(ccolor[2] + rero*rand(-.15,.15), 0, 1);
 
-            let whiteamp = .25 + .25*Math.sin(iter * 0.8);
+            let whiteamp = .25 + .25 * Math.sin(iter * 0.8 * 2.);
+            whiteamp = .5 + .5 * Math.sin(iter * 0.8);
             c1[0] = c1[0] * (1 - whiteamp) + whiteamp * white;
             c1[1] = c1[1] * (1 - whiteamp) + whiteamp * white;
             c1[2] = c1[2] * (1 - whiteamp) + whiteamp * white;
@@ -483,9 +502,9 @@ function constructQuads() {
             oorange[1] = clamp(oorange[1] + .3*rand(-.15, .15), 0, 1);
             oorange[2] = clamp(oorange[2] + .3*rand(-.15, .15), 0, 1);
 
-            // c1[0] = c1[0] * (1 - hohoamp) + hohoamp * oorange[0];
-            // c1[1] = c1[1] * (1 - hohoamp) + hohoamp * oorange[1];
-            // c1[2] = c1[2] * (1 - hohoamp) + hohoamp * oorange[2];
+            c1[0] = c1[0] * (1 - hohoamp) + hohoamp * oorange[0];
+            c1[1] = c1[1] * (1 - hohoamp) + hohoamp * oorange[1];
+            c1[2] = c1[2] * (1 - hohoamp) + hohoamp * oorange[2];
 
 
             if(rand(0,1) < .5 && i < walks*symetryend) {

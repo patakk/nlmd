@@ -9,6 +9,7 @@ uniform vec3 u_margincolor;
 
 uniform sampler2D u_bluenoiseTexture;
 uniform vec2 u_bluenoiseTextureSize;
+uniform vec3 u_edgecolor;
 
 varying vec2 v_uv;
 
@@ -293,7 +294,7 @@ void main() {
 
     float edges = edgedetection();
 
-    result = mix(result, vec3(1., .4, .0), .4*smoothstep(.1, .2, edges));
+    result = mix(result, u_edgecolor, .4*smoothstep(.1, .2, edges));
 
     gl_FragColor = vec4(vec3(result.rgb), 1.);
     
